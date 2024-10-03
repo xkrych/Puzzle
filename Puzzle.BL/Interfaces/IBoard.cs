@@ -6,8 +6,9 @@
         int RowCount { get; }
         int ColumnCount { get; }
         ICard[,] Cards { get; }
+        bool TryGetCardPositionById(int cardId, out int row, out int column);
+        ICard[,] GetBoardCopy();
         List<int> GetCardIds();
-        void MoveCardsByIds(List<int> cardIdsAfterMove);
         ICard GetMiddleCard();
         ICard GetTopLeftCard();
         ICard GetTopMiddleCard();

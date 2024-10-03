@@ -11,12 +11,15 @@ namespace Puzzle.BL.Models
         private readonly IFactory<IPermutationGenerator> permutationGeneratorFactory;
         private IPermutationGenerator? permutationGenerator;
         private readonly List<int> cardIdsInMiddle = new();
+        private readonly ICardMover cardMover;
 
         public Solver(IBoard board,
+            ICardMover cardMover,
             IFactory<IPermutationGenerator> permutationGeneratorFactory)
         {
             Board = board;
             this.permutationGeneratorFactory = permutationGeneratorFactory;
+            this.cardMover = cardMover;
         }
         
         public IBoard Board { get; }
@@ -112,7 +115,7 @@ namespace Puzzle.BL.Models
                     // swap card with card in the middle of the board
                     cardIds[i] = cardIds[Board.MiddleBoard1DIndex];
                     cardIds[Board.MiddleBoard1DIndex] = cardId;
-                    Board.MoveCardsByIds(cardIds);
+                    cardMover.MoveCardsByIds(cardIds, Board);
                     break;
                 }
             }
@@ -164,7 +167,7 @@ namespace Puzzle.BL.Models
             // get next permutaion of edge cards
             var cardIdsAfterMove = GetNextEdgeCardIdsPermutation();
             // move cards around board accoeding to permutation
-            Board.MoveCardsByIds(cardIdsAfterMove);
+            cardMover.MoveCardsByIds(cardIdsAfterMove, Board);
         }
 
         private void RearrangeBoardCards(out bool isAllPermutations, out bool isAllCardsInMiddle)

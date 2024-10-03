@@ -1,5 +1,4 @@
 ﻿using Puzzle.BL.Enums;
-using Puzzle.BL.Exceptions;
 using Puzzle.BL.Factories;
 using Puzzle.BL.Interfaces;
 
@@ -7,15 +6,12 @@ namespace Puzzle.BL.Models
 {
     public class Board : IBoard
     {
-        private readonly IFactory<ICardMove> cardMoveFactory;
         private readonly IFactory<IEmoticonPart> emoticonPartFactory;
         private readonly IFactory<ICard> cardFactory;
 
-        public Board(IFactory<ICardMove> cardMoveFactory,
-            IFactory<IEmoticonPart> emoticonPartFactory,
+        public Board(IFactory<IEmoticonPart> emoticonPartFactory,
             IFactory<ICard> cardFactory)
         {
-            this.cardMoveFactory = cardMoveFactory;
             this.emoticonPartFactory = emoticonPartFactory;
             this.cardFactory = cardFactory;
             Cards = GetDefaultBoard();
@@ -40,34 +36,6 @@ namespace Puzzle.BL.Models
             }
 
             return cardIds;
-        }
-
-        public void MoveCardsByIds(List<int> cardIdsAfterMove)
-        {
-            var cardMoves = new List<ICardMove>();
-
-            for (var i = 0; i < cardIdsAfterMove.Count; i++)
-            {
-                var cardId = cardIdsAfterMove[i];
-
-                if (!TryGetCardPositionById(cardId, out var fromRow, out var fromColumn))
-                    throw new CardNotFoundException($"Card with id {cardId} not found.");
-
-                var toRow = i / RowCount;
-                var toColumn = i % ColumnCount;
-
-                if (fromRow == toRow && fromColumn == toColumn)
-                    continue;
-
-                var cardMove = cardMoveFactory.Create();
-                cardMove.FromRow = fromRow;
-                cardMove.FromColumn = fromColumn;
-                cardMove.ToRow = toRow;
-                cardMove.ToColumn = toColumn;
-                cardMoves.Add(cardMove);
-            }
-
-            MoveCards(cardMoves);
         }
 
         // o o o
@@ -221,20 +189,7 @@ namespace Puzzle.BL.Models
             };
         }
 
-        private void MoveCards(List<ICardMove> cardMoves)
-        {
-            if (cardMoves.Count == 0)
-                return;
-
-            var copiedBoard = GetBoardCopy();
-
-            foreach (var cardMove in cardMoves)
-            {
-                Cards[cardMove.ToRow, cardMove.ToColumn] = copiedBoard[cardMove.FromRow, cardMove.FromColumn];
-            }
-        }
-
-        private bool TryGetCardPositionById(int cardId, out int row, out int column)
+        public bool TryGetCardPositionById(int cardId, out int row, out int column)
         {
             for (var i = 0; i < RowCount; i++)
             {
@@ -256,7 +211,7 @@ namespace Puzzle.BL.Models
             return false;
         }
 
-        private ICard[,] GetBoardCopy()
+        public ICard[,] GetBoardCopy()
         {
             var copiedCards = new ICard[RowCount, ColumnCount];
 
