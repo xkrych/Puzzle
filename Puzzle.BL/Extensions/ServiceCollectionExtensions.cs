@@ -9,8 +9,8 @@ namespace Puzzle.BL.Extensions
     {
         public static IServiceCollection AddBLServices(this IServiceCollection services)
         {
-            services.AddTransient<ISolver, Solver>();
-            services.AddTransient<IBoard, Board>();
+            services.AddTransient<ISolver, Board3x3Solver>();
+            services.AddTransient<IBoardBuilder, Board3x3Builder>();
             services.AddFactory<IPermutationGenerator, PermutationGenerator>();
             services.AddFactory<ICardMove, CardMove>();
             services.AddFactory<IEmoticonPart, EmoticonPart>();

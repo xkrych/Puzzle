@@ -1,7 +1,6 @@
-﻿namespace Puzzle.BL.Interfaces
+﻿namespace Puzzle.BL.Interfaces;
+
+public interface ICardMover
 {
-    public interface ICardMover
-    {
-        void MoveCardsByIds(List<int> cardIdsAfterMove, IBoard board);
-    }
+    void MoveCardsByIds(List<int> cardIdsAfterMove, IBoard board);
 }

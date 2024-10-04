@@ -1,4 +1,6 @@
-﻿namespace Puzzle.BL.Factories
+﻿using Puzzle.BL.Interfaces;
+
+namespace Puzzle.BL.Factories
 {
     public class Factory<T> : IFactory<T>
     {

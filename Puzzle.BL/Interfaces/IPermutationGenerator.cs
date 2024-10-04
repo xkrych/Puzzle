@@ -1,9 +1,8 @@
-﻿namespace Puzzle.BL.Interfaces
+﻿namespace Puzzle.BL.Interfaces;
+
+public interface IPermutationGenerator
 {
-    public interface IPermutationGenerator
-    {
-        bool AllPermutationsGenerated { get; }
-        List<int> GetNextPermutation();
-        void Init(List<int> input);
-    }
+    bool AllPermutationsGenerated { get; }
+    List<int> GetNextPermutation();
+    void Init(List<int> input);
 }

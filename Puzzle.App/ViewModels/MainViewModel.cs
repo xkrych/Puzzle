@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.IO;
 using System.Windows;
 using System.Windows.Input;
@@ -10,12 +11,18 @@ using Puzzle.BL.Interfaces;
 
 namespace Puzzle.App.ViewModels
 {
-    public class MainViewModel
+    public class MainViewModel : INotifyPropertyChanged
     {
         private readonly ISolver solver;
+        private readonly IBoard board;
+        private bool isSolvingInProgress;
 
-        public MainViewModel(ISolver solver)
+        public event PropertyChangedEventHandler? PropertyChanged;
+
+        public MainViewModel(ISolver solver, IBoardBuilder boardBuilder)
         {
+            boardBuilder.SetDefaultSquareCards();
+            board = boardBuilder.GetBoard();
             this.solver = solver;
             LoadImages();
             SolvePuzzleCmd = new RelayCommand(SolvePuzzle);
@@ -23,13 +30,23 @@ namespace Puzzle.App.ViewModels
 
         public ObservableCollection<BitmapImage> Images { get; set; } = new();
         public ICommand SolvePuzzleCmd { get; set; }
+        public bool IsSolvingInProgress 
+        { 
+            get => isSolvingInProgress; 
+            set
+            {
+                isSolvingInProgress = value;
+                OnPropertyChanged(nameof(IsSolvingInProgress));
+            }
+        }
 
         private async void SolvePuzzle()
         {
             try
             {
-                var isSolved = await solver.SolveBoard();
-                RearrangeBoard(solver.Board);
+                IsSolvingInProgress = true;
+                var isSolved = await solver.SolveBoard(board);
+                RearrangeBoard(board);
                 if (!isSolved)
                 {
                     MessageBox.Show("Could not be solved.");
@@ -38,6 +55,10 @@ namespace Puzzle.App.ViewModels
             catch (Exception e)
             {
                 MessageBox.Show($"Error while solving: {e.Message}");
+            }
+            finally
+            {
+                IsSolvingInProgress = false;
             }
         }
 
@@ -77,11 +98,17 @@ namespace Puzzle.App.ViewModels
 
         private void LoadImages()
         {
-            for (var i = 1; i <= 9; i++)
+            var numberOfImages = board.RowCount * board.ColumnCount;
+            for (var i = 1; i <= numberOfImages; i++)
             {
                 var bitmap = new BitmapImage(new Uri(Path.GetFullPath($".\\Resources\\Images\\card{i}.png")));
                 Images.Add(bitmap);
             }
+        }
+
+        protected virtual void OnPropertyChanged(string propertyName)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }

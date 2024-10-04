@@ -1,11 +1,10 @@
 ﻿using Puzzle.BL.Enums;
 using Puzzle.BL.Interfaces;
 
-namespace Puzzle.BL.Models
+namespace Puzzle.BL.Models;
+
+public class EmoticonPart : IEmoticonPart
 {
-    public class EmoticonPart : IEmoticonPart
-    {
-        public EmoticonSide EmoticonSide { get; set; }
-        public EmoticonColor EmoticonColor { get; set; }
-    }
+    public EmoticonSide EmoticonSide { get; set; }
+    public EmoticonColor EmoticonColor { get; set; }
 }

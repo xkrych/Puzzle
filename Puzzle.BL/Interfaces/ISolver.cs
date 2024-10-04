@@ -1,8 +1,6 @@
-﻿namespace Puzzle.BL.Interfaces
+﻿namespace Puzzle.BL.Interfaces;
+
+public interface ISolver
 {
-    public interface ISolver
-    {
-        IBoard Board { get; }
-        Task<bool> SolveBoard();
-    }
+    Task<bool> SolveBoard(IBoard board);
 }
