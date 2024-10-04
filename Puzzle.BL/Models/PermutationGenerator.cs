@@ -4,22 +4,22 @@ namespace Puzzle.BL.Models;
 
 public class PermutationGenerator : IPermutationGenerator
 {
-    private readonly List<List<int>> permutatedNumbers = new();
     private int numberOfGeneratedPermutations;
     
-    public bool AllPermutationsGenerated => permutatedNumbers.Count == numberOfGeneratedPermutations;
+    public List<List<int>> PermutatedNumbers { get; private set; } = new();
+    public bool AllPermutationsGenerated => PermutatedNumbers.Count == numberOfGeneratedPermutations;
 
     public void Init(List<int> input)
     {
-        Heaps(permutatedNumbers, input, input.Count);
+        Heaps(PermutatedNumbers, input, input.Count);
     }
 
     public List<int> GetNextPermutation()
     {
-        if (numberOfGeneratedPermutations == permutatedNumbers.Count)
+        if (numberOfGeneratedPermutations == PermutatedNumbers.Count)
             throw new IndexOutOfRangeException("Permutation index is out of range.");
 
-        return permutatedNumbers[numberOfGeneratedPermutations++];
+        return PermutatedNumbers[numberOfGeneratedPermutations++];
     }
 
     // inspired by: https://code-maze.com/csharp-generate-permutations/

@@ -5,18 +5,21 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:viewModels="clr-namespace:Puzzle.App.ViewModels"
         mc:Ignorable="d"
-        Title="Puzzle" Height="760" Width="675"
+        Title="Puzzle" Height="760" Width="645"
         d:DataContext="{d:DesignInstance viewModels:MainViewModel}">
     <Grid>
         <Grid.RowDefinitions>
+            <RowDefinition Height="0.05*" />
             <RowDefinition Height="0.05*" />
             <RowDefinition Height="*" />
             <RowDefinition Height="0.05*" />
         </Grid.RowDefinitions>
 
-        <Button Grid.Row="0" Command="{Binding SolvePuzzleCmd}" Content="Solve puzzle" />
+        <Button Grid.Row="0" Command="{Binding SetRandomPuzzleArrangementCmd}" Content="Set random puzzle arrangement" />
         
-        <ItemsControl Name="imageGrid" Grid.Row="1" ItemsSource="{Binding Images, Mode=TwoWay }">
+        <Button Grid.Row="1" Command="{Binding SolvePuzzleCmd}" Content="Solve puzzle" />
+        
+        <ItemsControl Name="imageGrid" Grid.Row="2" ItemsSource="{Binding Images, Mode=TwoWay }">
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
                     <UniformGrid Rows="3" Columns="3"/>
@@ -29,6 +32,6 @@
             </ItemsControl.ItemTemplate>
         </ItemsControl>
 
-        <ProgressBar Grid.Row="2" IsIndeterminate="{Binding IsSolvingInProgress}"/>
+        <ProgressBar Grid.Row="3" IsIndeterminate="{Binding IsSolvingInProgress}"/>
     </Grid>
 </Window>

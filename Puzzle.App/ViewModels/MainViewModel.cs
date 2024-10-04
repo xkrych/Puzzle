@@ -15,21 +15,27 @@ namespace Puzzle.App.ViewModels
     {
         private readonly ISolver solver;
         private readonly IBoard board;
+        private readonly ICardMover cardMover;
         private bool isSolvingInProgress;
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
-        public MainViewModel(ISolver solver, IBoardBuilder boardBuilder)
+        public MainViewModel(ISolver solver, 
+            IBoardBuilder boardBuilder,
+            ICardMover cardMover)
         {
             boardBuilder.SetDefaultSquareCards();
             board = boardBuilder.GetBoard();
             this.solver = solver;
+            this.cardMover = cardMover;
             LoadImages();
             SolvePuzzleCmd = new RelayCommand(SolvePuzzle);
+            SetRandomPuzzleArrangementCmd = new RelayCommand(SetRandomPuzzleArrangement);
         }
 
         public ObservableCollection<BitmapImage> Images { get; set; } = new();
         public ICommand SolvePuzzleCmd { get; set; }
+        public ICommand SetRandomPuzzleArrangementCmd { get; set; }
         public bool IsSolvingInProgress 
         { 
             get => isSolvingInProgress; 
@@ -37,6 +43,20 @@ namespace Puzzle.App.ViewModels
             {
                 isSolvingInProgress = value;
                 OnPropertyChanged(nameof(IsSolvingInProgress));
+            }
+        }
+
+        private void SetRandomPuzzleArrangement()
+        {
+            try
+            {
+                cardMover.MoveCardsToRandomPositions(board);
+                RearrangeBoard(board);
+                
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show($"Error while generating random puzzle arrangement: {e.Message}");
             }
         }
 
