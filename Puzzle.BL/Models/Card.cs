@@ -8,11 +8,13 @@ public class Card : ICard
     private int numberOfRightRotations;
 
     public int Id { get; set; }
-    public IEmoticonPart TopEmoticonColoredPart { get; private set; } = null!;
-    public IEmoticonPart RightEmoticonColoredPart { get; private set; } = null!;
-    public IEmoticonPart DownEmoticonColoredPart { get; private set; } = null!;
-    public IEmoticonPart LeftEmoticonColoredPart { get; private set; } = null!;
+    public IEmoticonPart TopEmoticonColoredPart { get; private set; } = new EmoticonPart();
+    public IEmoticonPart RightEmoticonColoredPart { get; private set; } = new EmoticonPart();
+    public IEmoticonPart DownEmoticonColoredPart { get; private set; } = new EmoticonPart();
+    public IEmoticonPart LeftEmoticonColoredPart { get; private set; } = new EmoticonPart();
     public int NumberOfCardSides => 4;
+    public Dictionary<(EmoticonSide, EmoticonColor), int> EmoticonPartCounts { get; private set; } 
+        = new Dictionary<(EmoticonSide, EmoticonColor), int>();
 
     public void SetParts(IEmoticonPart top, 
         IEmoticonPart right, 
@@ -23,6 +25,24 @@ public class Card : ICard
         RightEmoticonColoredPart = right;
         DownEmoticonColoredPart = down;
         LeftEmoticonColoredPart = left;
+        CheckEmoticonPartsCounts();
+    }
+
+    private void CheckEmoticonPartsCounts()
+    {
+        EmoticonPartCounts.Clear();
+        CheckEmoticonPartCounts(TopEmoticonColoredPart.EmoticonSide, TopEmoticonColoredPart.EmoticonColor);
+        CheckEmoticonPartCounts(RightEmoticonColoredPart.EmoticonSide, RightEmoticonColoredPart.EmoticonColor);
+        CheckEmoticonPartCounts(LeftEmoticonColoredPart.EmoticonSide, LeftEmoticonColoredPart.EmoticonColor);
+        CheckEmoticonPartCounts(DownEmoticonColoredPart.EmoticonSide, DownEmoticonColoredPart.EmoticonColor);
+    }
+
+    private void CheckEmoticonPartCounts(EmoticonSide side, EmoticonColor color)
+    {
+        if (!EmoticonPartCounts.ContainsKey((side, color)))
+            EmoticonPartCounts.Add((side, color), 0);
+
+        EmoticonPartCounts[(side, color)]++;
     }
 
     public CardRightRotation GetCardRightRotation()
