@@ -11,11 +11,11 @@ namespace Puzzle.BL.Extensions
         {
             services.AddTransient<ISolver, Board3x3Solver>();
             services.AddTransient<IBoardBuilder, Board3x3Builder>();
+            services.AddTransient<ICardMover, CardMover>();
             services.AddFactory<IPermutationGenerator, PermutationGenerator>();
             services.AddFactory<ICardMove, CardMove>();
             services.AddFactory<IEmoticonPart, EmoticonPart>();
             services.AddFactory<ICard, Card>();
-            services.AddFactory<ICardMover, CardMover>();
             return services;
         }
 
