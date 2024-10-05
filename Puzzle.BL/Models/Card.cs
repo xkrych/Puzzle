@@ -50,6 +50,21 @@ public class Card : ICard
         return (CardRightRotation)(numberOfRightRotations % NumberOfCardSides);
     }
 
+    public bool HasMultipleEmoticonParts(IEmoticonPart emoticonPart, out int partCount)
+    {
+        var side = (emoticonPart.EmoticonSide == EmoticonSide.Down) ? EmoticonSide.Up : EmoticonSide.Down;
+        var color = emoticonPart.EmoticonColor;
+
+        if (EmoticonPartCounts.ContainsKey((side, color)))
+        {
+            partCount = EmoticonPartCounts[(side, color)];
+            return partCount > 1;
+        }
+
+        partCount = 1;
+        return false;
+    }
+
     public void RotateCardToRight()
     {
         numberOfRightRotations++;

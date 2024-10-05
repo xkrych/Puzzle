@@ -16,4 +16,5 @@ public interface ICard
         IEmoticonPart right,
         IEmoticonPart down,
         IEmoticonPart left);
+    bool HasMultipleEmoticonParts(IEmoticonPart emoticonPart, out int partCount);
 }

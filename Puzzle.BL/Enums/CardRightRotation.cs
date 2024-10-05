@@ -1,10 +1,9 @@
-﻿namespace Puzzle.BL.Enums
+﻿namespace Puzzle.BL.Enums;
+
+public enum CardRightRotation
 {
-    public enum CardRightRotation
-    {
-        Rotate0,
-        Rotate90,
-        Rotate180,
-        Rotate270,
-    }
+    Rotate0,
+    Rotate90,
+    Rotate180,
+    Rotate270,
 }

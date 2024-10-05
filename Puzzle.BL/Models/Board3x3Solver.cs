@@ -28,9 +28,12 @@ public class Board3x3Solver : ISolver
             var isSolved = false;
             var isAllCardsInMiddle = false;
             var isAllPermutations = false;
+            int cnt = 0;
 
             while (!isSolved && (!isAllPermutations || !isAllCardsInMiddle))
             {
+                cnt++;
+
                 if (!isFirstSolveTry)
                 {
                     RearrangeBoardCards(board, out isAllPermutations, out isAllCardsInMiddle);
@@ -38,28 +41,7 @@ public class Board3x3Solver : ISolver
                 else
                     isFirstSolveTry = false;
 
-                if (!SolveTopMiddleCard(board))
-                    continue;
-
-                if (!SolveRightMiddleCard(board))
-                    continue;
-
-                if (!SolveDownMiddleCard(board))
-                    continue;
-
-                if (!SolveLeftMiddleCard(board))
-                    continue;
-
-                if (!SolveTopLeftCard(board))
-                    continue;
-
-                if (!SolveTopRightCard(board))
-                    continue;
-
-                if (!SolveDownRightCard(board))
-                    continue;
-
-                if (!SolveDownLeftCard(board))
+                if (!SolveEdgeCards(board))
                     continue;
 
                 isSolved = true;
@@ -67,6 +49,145 @@ public class Board3x3Solver : ISolver
 
             return isSolved;
         });
+    }
+
+    private bool SolveEdgeCards(IBoard board)
+    {
+        if (!SolveEdgeMiddleCards(board))
+            return false;
+
+        var multipleSameEmoticonPartsCards = new List<MultipleEmoticonPartsMiddleEdgeCard>();
+        var middleCard = board.GetMiddleCard();
+        var topMiddleCard = board.GetTopMiddleCard();
+        var rightMiddleCard = board.GetRightMiddleCard();
+        var downMiddleCard = board.GetDownMiddleCard();
+        var leftMiddleCard = board.GetLeftMiddleCard();
+
+        CheckMultipleEmoticonPartsCard(topMiddleCard, multipleSameEmoticonPartsCards, 
+            middleCard.TopEmoticonColoredPart, EdgeMiddleCardPosition.Top);
+        CheckMultipleEmoticonPartsCard(rightMiddleCard, multipleSameEmoticonPartsCards,
+            middleCard.RightEmoticonColoredPart, EdgeMiddleCardPosition.Right);
+        CheckMultipleEmoticonPartsCard(downMiddleCard, multipleSameEmoticonPartsCards,
+            middleCard.DownEmoticonColoredPart, EdgeMiddleCardPosition.Down);
+        CheckMultipleEmoticonPartsCard(leftMiddleCard, multipleSameEmoticonPartsCards,
+            middleCard.LeftEmoticonColoredPart, EdgeMiddleCardPosition.Left);
+
+        if (multipleSameEmoticonPartsCards.Count > 0)
+        {
+            if (SolveMultipleSameEmoticonPartsCards(board, multipleSameEmoticonPartsCards))
+                return true;
+        }
+        else
+        {
+            if (SolveCornerCards(board))
+                return true;
+        }
+
+        return false;
+    }
+
+    private void CheckMultipleEmoticonPartsCard(ICard card, 
+        List<MultipleEmoticonPartsMiddleEdgeCard> multipleSameEmoticonPartsCards,
+        IEmoticonPart emoticonPart,
+        EdgeMiddleCardPosition position)
+    {
+        if (card.HasMultipleEmoticonParts(emoticonPart, out var cnt))
+            multipleSameEmoticonPartsCards.Add(new MultipleEmoticonPartsMiddleEdgeCard(card, position, cnt));
+    }
+
+    private bool SolveMultipleSameEmoticonPartsCards(IBoard board, 
+        List<MultipleEmoticonPartsMiddleEdgeCard> multipleSameEmoticonPartsCards)
+    {
+        var allRotationsPerformed = false;
+
+        while (!allRotationsPerformed)
+        {
+            if (SolveCornerCards(board))
+                return true;
+
+            PerformRotations(multipleSameEmoticonPartsCards, 
+                board,
+                multipleSameEmoticonPartsCards.Count - 1,
+                out allRotationsPerformed);
+        }
+
+        return false;
+    }
+
+    private void PerformRotations(List<MultipleEmoticonPartsMiddleEdgeCard> multipleSameEmoticonPartsCards,
+        IBoard board,
+        int rotatedCardIndex,
+        out bool allRotationsPerformed)
+    {
+        if (rotatedCardIndex < 0)
+        {
+            allRotationsPerformed = false;
+            return;
+        }
+
+        var card = multipleSameEmoticonPartsCards[rotatedCardIndex];
+
+        // perform rotation
+        if (card.Position == EdgeMiddleCardPosition.Top)
+            SolveTopMiddleCard(board);
+        else if (card.Position == EdgeMiddleCardPosition.Right)
+            SolveRightMiddleCard(board);
+        else if (card.Position == EdgeMiddleCardPosition.Down)
+            SolveDownMiddleCard(board);
+        else
+            SolveLeftMiddleCard(board);
+
+        card.RotationsCnt++;
+
+        if (card.RotationsCnt == card.SamePartsCnt && rotatedCardIndex == 0)
+        {
+            allRotationsPerformed = true;
+            return;
+        }
+
+        if (card.RotationsCnt == card.SamePartsCnt)
+        {
+            PerformRotations(multipleSameEmoticonPartsCards, board, rotatedCardIndex - 1, out allRotationsPerformed);
+        }
+
+        allRotationsPerformed = false;
+    }
+
+    private bool SolveEdgeMiddleCards(IBoard board)
+    {
+        if (!SolveTopMiddleCard(board))
+            return false;
+
+        if (!SolveRightMiddleCard(board))
+            return false;
+
+        if (!SolveDownMiddleCard(board))
+            return false;
+
+        if (!SolveLeftMiddleCard(board))
+            return false;
+
+        if (SolveCornerCards(board))
+            return true;
+
+        return true;
+    }
+
+    private bool SolveCornerCards(IBoard board)
+    {
+        if (!SolveTopLeftCard(board))
+            return false;
+
+        if (!SolveTopRightCard(board))
+            return false;
+
+        if (!SolveDownRightCard(board))
+            return false;
+
+        if (!SolveDownLeftCard(board))
+            return false;
+
+        return true;
     }
 
     private List<int> GetCardIdsAroundBoard(IBoard board)
@@ -200,6 +321,9 @@ public class Board3x3Solver : ISolver
         var middleCard = board.GetMiddleCard();
         var topMiddleCard = board.GetTopMiddleCard();
 
+        // rotate card due to same equal parts
+        topMiddleCard.RotateCardToRight();
+
         for (var i = 0; i < topMiddleCard.NumberOfCardSides; i++)
         {
             if (IsCompleteColoredEmoticon(middleCard.TopEmoticonColoredPart,
@@ -222,6 +346,9 @@ public class Board3x3Solver : ISolver
     {
         var middleCard = board.GetMiddleCard();
         var rightMiddleCard = board.GetRightMiddleCard();
+
+        // rotate card due to same equal parts
+        rightMiddleCard.RotateCardToRight();
 
         for (var i = 0; i < rightMiddleCard.NumberOfCardSides; i++)
         {
@@ -246,6 +373,9 @@ public class Board3x3Solver : ISolver
         var middleCard = board.GetMiddleCard();
         var downMiddleCard = board.GetDownMiddleCard();
 
+        // rotate card due to same equal parts
+        downMiddleCard.RotateCardToRight();
+
         for (var i = 0; i < downMiddleCard.NumberOfCardSides; i++)
         {
             if (IsCompleteColoredEmoticon(middleCard.DownEmoticonColoredPart,
@@ -268,6 +398,9 @@ public class Board3x3Solver : ISolver
     {
         var middleCard = board.GetMiddleCard();
         var leftMiddleCard = board.GetLeftMiddleCard();
+
+        // rotate card due to same equal parts
+        leftMiddleCard.RotateCardToRight();
 
         for (var i = 0; i < leftMiddleCard.NumberOfCardSides; i++)
         {
