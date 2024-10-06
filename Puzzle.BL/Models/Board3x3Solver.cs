@@ -68,7 +68,7 @@ public class Board3x3Solver : ISolver
     /// <summary>
     /// Attempt to reposition the edge cards on the board so that 
     /// every two adjacent cards form a complete emoticon and every
-    /// edge card form complete emoticon with card in the middle of
+    /// middle edge card form complete emoticon with card in the middle of
     /// the board.
     /// </summary>
     /// <param name="board">board</param>
@@ -231,8 +231,7 @@ public class Board3x3Solver : ISolver
 
     /// <summary>
     /// Attempt to reposition the edge corner cards on the board so that 
-    /// every card forms complete emoticon with card in the middle of 
-    /// the board.
+    /// every card forms complete emoticon with middle edge card.
     /// </summary>
     /// <param name="board">board</param>
     /// <returns>true if attempt was succesfull</returns>
