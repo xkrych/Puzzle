@@ -17,6 +17,7 @@ namespace Puzzle.App.ViewModels
         private readonly IBoard board;
         private readonly ICardMover cardMover;
         private bool isSolvingInProgress;
+        private bool isButtonsEnabled;
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
@@ -31,6 +32,7 @@ namespace Puzzle.App.ViewModels
             LoadImages();
             SolvePuzzleCmd = new RelayCommand(SolvePuzzle);
             SetRandomPuzzleArrangementCmd = new RelayCommand(SetRandomPuzzleArrangement);
+            IsButtonsEnabled = true;
         }
 
         public ObservableCollection<BitmapImage> Images { get; set; } = new();
@@ -45,14 +47,24 @@ namespace Puzzle.App.ViewModels
                 OnPropertyChanged(nameof(IsSolvingInProgress));
             }
         }
+        public bool IsButtonsEnabled
+        {
+            get => isButtonsEnabled;
+            set
+            {
+                isButtonsEnabled = value;
+                OnPropertyChanged(nameof(IsButtonsEnabled));
+            }
+        }
 
         private void SetRandomPuzzleArrangement()
         {
             try
             {
+                IsButtonsEnabled = false;
                 cardMover.MoveCardsToRandomPositions(board);
                 RearrangeBoard(board);
-                
+                IsButtonsEnabled = true;
             }
             catch (Exception e)
             {
@@ -64,6 +76,7 @@ namespace Puzzle.App.ViewModels
         {
             try
             {
+                IsButtonsEnabled = false;
                 IsSolvingInProgress = true;
                 var isSolved = await solver.SolveBoard(board);
                 RearrangeBoard(board);
@@ -79,6 +92,7 @@ namespace Puzzle.App.ViewModels
             finally
             {
                 IsSolvingInProgress = false;
+                IsButtonsEnabled = true;
             }
         }
 

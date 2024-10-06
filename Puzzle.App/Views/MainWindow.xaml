@@ -15,9 +15,13 @@
             <RowDefinition Height="0.05*" />
         </Grid.RowDefinitions>
 
-        <Button Grid.Row="0" Command="{Binding SetRandomPuzzleArrangementCmd}" Content="Set random puzzle arrangement" />
+        <Button Grid.Row="0" Command="{Binding SetRandomPuzzleArrangementCmd}" 
+                Content="Set random puzzle arrangement" 
+                IsEnabled="{Binding IsButtonsEnabled}"/>
         
-        <Button Grid.Row="1" Command="{Binding SolvePuzzleCmd}" Content="Solve puzzle" />
+        <Button Grid.Row="1" Command="{Binding SolvePuzzleCmd}" 
+                Content="Solve puzzle" 
+                IsEnabled="{Binding IsButtonsEnabled}"/>
         
         <ItemsControl Name="imageGrid" Grid.Row="2" ItemsSource="{Binding Images, Mode=TwoWay }">
             <ItemsControl.ItemsPanel>
