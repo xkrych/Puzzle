@@ -2,6 +2,9 @@
 
 namespace Puzzle.BL.Models;
 
+/// <summary>
+/// Class for card move performed on the board.
+/// </summary>
 public class CardMove : ICardMove
 {
     public int FromRow { get; set; }

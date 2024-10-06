@@ -16,6 +16,7 @@ namespace Puzzle.BL.Extensions
             services.AddFactory<ICardMove, CardMove>();
             services.AddFactory<IEmoticonPart, EmoticonPart>();
             services.AddFactory<ICard, Card>();
+            services.AddFactory<IBoard, Board3x3>();
             return services;
         }
 

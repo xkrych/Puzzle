@@ -2,13 +2,17 @@
 
 namespace Puzzle.BL.Models;
 
+/// <summary>
+/// Class for board with cards.
+/// </summary>
 public class Board3x3 : IBoard
 {
-    public Board3x3() 
+    public Board3x3()
     {
         Cards = new ICard[RowCount, ColumnCount];
     }
 
+    // Index of middle card when board is converted to 1D array of cards.
     public int MiddleBoard1DIndex => 4;
     public int RowCount => 3;
     public int ColumnCount => 3;
@@ -86,6 +90,10 @@ public class Board3x3 : IBoard
         return Cards[1, 0];
     }
 
+    /// <summary>
+    /// Get IDs of all cards on the board.
+    /// </summary>
+    /// <returns>card IDs</returns>
     public List<int> GetCardIds()
     {
         var cardIds = new List<int>();
@@ -102,6 +110,13 @@ public class Board3x3 : IBoard
         return cardIds;
     }
 
+    /// <summary>
+    /// Get row and column number for card with ID.
+    /// </summary>
+    /// <param name="cardId">card ID</param>
+    /// <param name="row">row of the card with ID</param>
+    /// <param name="column">column of the card with ID</param>
+    /// <returns>true if card was found</returns>
     public bool TryGetCardPositionById(int cardId, out int row, out int column)
     {
         for (var i = 0; i < RowCount; i++)
@@ -124,6 +139,10 @@ public class Board3x3 : IBoard
         return false;
     }
 
+    /// <summary>
+    /// Copy current card positions to new array
+    /// </summary>
+    /// <returns>array with current positions of the cards on the board</returns>
     public ICard[,] GetBoardCopy()
     {
         var copiedCards = new ICard[RowCount, ColumnCount];

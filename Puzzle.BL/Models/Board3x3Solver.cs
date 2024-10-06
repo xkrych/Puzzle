@@ -18,6 +18,12 @@ public class Board3x3Solver : ISolver
         this.cardMover = cardMover;
     }
 
+    /// <summary>
+    /// Attempt to reposition the cards on the board so that 
+    /// every two adjacent cards form a complete emoticon.
+    /// </summary>
+    /// <param name="board">board</param>
+    /// <returns>true if attempt was succesfull</returns>
     public Task<bool> SolveBoard(IBoard board)
     {
         return Task.Run(() =>
@@ -30,6 +36,8 @@ public class Board3x3Solver : ISolver
             var isAllPermutations = false;
             int cnt = 0;
 
+            // The cycle ends when all cards have been resolved or when all permutations
+            // have been generated and all cards have been in the center of the board.
             while (!isSolved && (!isAllPermutations || !isAllCardsInMiddle))
             {
                 cnt++;
@@ -51,6 +59,14 @@ public class Board3x3Solver : ISolver
         });
     }
 
+    /// <summary>
+    /// Attempt to reposition the edge cards on the board so that 
+    /// every two adjacent cards form a complete emoticon and every
+    /// edge card form complete emoticon with card in the middle of
+    /// the board.
+    /// </summary>
+    /// <param name="board">board</param>
+    /// <returns>true if attempt was succesfull</returns>
     private bool SolveEdgeCards(IBoard board)
     {
         if (!SolveEdgeMiddleCards(board))
@@ -86,6 +102,14 @@ public class Board3x3Solver : ISolver
         return false;
     }
 
+    /// <summary>
+    /// Check if there are multiple identical parts of the emoticon on the card, 
+    /// and if so, insert the card into the card list.
+    /// </summary>
+    /// <param name="card">edge middle card</param>
+    /// <param name="multipleSameEmoticonPartsCards">all cards with multiple equal parts of a emoticon</param>
+    /// <param name="emoticonPart">emoticon part</param>
+    /// <param name="position">postition of the edge middle card</param>
     private void CheckMultipleEmoticonPartsCard(ICard card, 
         List<MultipleEmoticonPartsMiddleEdgeCard> multipleSameEmoticonPartsCards,
         IEmoticonPart emoticonPart,
@@ -95,6 +119,14 @@ public class Board3x3Solver : ISolver
             multipleSameEmoticonPartsCards.Add(new MultipleEmoticonPartsMiddleEdgeCard(card, position, cnt));
     }
 
+    /// <summary>
+    /// Attempt to reposition the edge cards with multiple identical parts of the emoji on the 
+    /// board so that every two adjacent cards form a complete emoticon and each edge card forms 
+    /// a complete emoticon with the card in the middle of the board.
+    /// </summary>
+    /// <param name="board">board</param>
+    /// <param name="multipleSameEmoticonPartsCards">all cards with multiple equal parts of a emoticon</param>
+    /// <returns>true if attempt was succesfull</returns>
     private bool SolveMultipleSameEmoticonPartsCards(IBoard board, 
         List<MultipleEmoticonPartsMiddleEdgeCard> multipleSameEmoticonPartsCards)
     {
@@ -105,7 +137,7 @@ public class Board3x3Solver : ISolver
             if (SolveCornerCards(board))
                 return true;
 
-            PerformRotations(multipleSameEmoticonPartsCards, 
+            PerformEdgeMiddleCardsRotations(multipleSameEmoticonPartsCards, 
                 board,
                 multipleSameEmoticonPartsCards.Count - 1,
                 out allRotationsPerformed);
@@ -114,7 +146,14 @@ public class Board3x3Solver : ISolver
         return false;
     }
 
-    private void PerformRotations(List<MultipleEmoticonPartsMiddleEdgeCard> multipleSameEmoticonPartsCards,
+    /// <summary>
+    /// Rotates cards with multiple equal parts of a emoticon.
+    /// </summary>
+    /// <param name="multipleSameEmoticonPartsCards">all cards with multiple equal parts of a emoticon</param>
+    /// <param name="board">boad</param>
+    /// <param name="rotatedCardIndex">current rotated card</param>
+    /// <param name="allRotationsPerformed">flag indicating whether all card rotations have been completed</param>
+    private void PerformEdgeMiddleCardsRotations(List<MultipleEmoticonPartsMiddleEdgeCard> multipleSameEmoticonPartsCards,
         IBoard board,
         int rotatedCardIndex,
         out bool allRotationsPerformed)
@@ -129,42 +168,53 @@ public class Board3x3Solver : ISolver
 
         // perform rotation
         if (card.Position == EdgeMiddleCardPosition.Top)
-            SolveTopMiddleCard(board);
+            SolveTopMiddleCardFromNextSide(board);
         else if (card.Position == EdgeMiddleCardPosition.Right)
-            SolveRightMiddleCard(board);
+            SolveRightMiddleCardFromNextSide(board);
         else if (card.Position == EdgeMiddleCardPosition.Down)
-            SolveDownMiddleCard(board);
+            SolveDownMiddleCardFromNextSide(board);
         else
-            SolveLeftMiddleCard(board);
+            SolveLeftMiddleCardFromNextSide(board);
 
         card.RotationsCnt++;
 
+        // if the last card has been completely rotated,
+        // then all rotations have been made
         if (card.RotationsCnt == card.SamePartsCnt && rotatedCardIndex == 0)
         {
             allRotationsPerformed = true;
             return;
         }
 
+        // when a card is completely rotated, the following card is rotated
         if (card.RotationsCnt == card.SamePartsCnt)
         {
-            PerformRotations(multipleSameEmoticonPartsCards, board, rotatedCardIndex - 1, out allRotationsPerformed);
+            PerformEdgeMiddleCardsRotations(multipleSameEmoticonPartsCards, board, 
+                rotatedCardIndex - 1, out allRotationsPerformed);
         }
 
         allRotationsPerformed = false;
     }
 
+    /// <summary>
+    /// Attempt to reposition the edge middle cards on the board so that 
+    /// every card forms complete emoticon with card in the middle of 
+    /// the board.
+    /// </summary>
+    /// <param name="board">board</param>
+    /// <returns>true if attempt was succesfull</returns>
     private bool SolveEdgeMiddleCards(IBoard board)
     {
-        if (!SolveTopMiddleCard(board))
+        if (!SolveTopMiddleCardFromNextSide(board))
             return false;
 
-        if (!SolveRightMiddleCard(board))
+        if (!SolveRightMiddleCardFromNextSide(board))
             return false;
 
-        if (!SolveDownMiddleCard(board))
+        if (!SolveDownMiddleCardFromNextSide(board))
             return false;
 
-        if (!SolveLeftMiddleCard(board))
+        if (!SolveLeftMiddleCardFromNextSide(board))
             return false;
 
         if (SolveCornerCards(board))
@@ -173,6 +223,13 @@ public class Board3x3Solver : ISolver
         return true;
     }
 
+    /// <summary>
+    /// Attempt to reposition the edge corner cards on the board so that 
+    /// every card forms complete emoticon with card in the middle of 
+    /// the board.
+    /// </summary>
+    /// <param name="board">board</param>
+    /// <returns>true if attempt was succesfull</returns>
     private bool SolveCornerCards(IBoard board)
     {
         if (!SolveTopLeftCard(board))
@@ -190,6 +247,11 @@ public class Board3x3Solver : ISolver
         return true;
     }
 
+    /// <summary>
+    /// Get IDs of the edge cards.
+    /// </summary>
+    /// <param name="board">board</param>
+    /// <returns>list of cards IDs</returns>
     private List<int> GetCardIdsAroundBoard(IBoard board)
     {
         var cardIds = board.GetCardIds();
@@ -236,6 +298,12 @@ public class Board3x3Solver : ISolver
         }
     }
 
+    /// <summary>
+    /// Reposition of the edge cards based on number permutation.
+    /// </summary>
+    /// <param name="board">board</param>
+    /// <returns>list of card IDs on the board after repostion</returns>
+    /// <exception cref="PermutationGenerationException"></exception>
     private List<int> GetNextEdgeCardIdsPermutation(IBoard board)
     {
         if (permutationGenerator == null)
@@ -312,16 +380,19 @@ public class Board3x3Solver : ISolver
         RearrangeEdgeBoardCards(board);
     }
 
+    /// <summary>
+    /// Finding the appropriate part of the emoticon from the next 
+    /// side of the card so that adjacent cards form a complete emoticon.
     // o X o
     // o X o
     // o o o
-    // an attempt to rotate the card so that the smiley is complete
-    private bool SolveTopMiddleCard(IBoard board)
+    /// </summary>
+    /// <param name="board">board</param>
+    /// <returns>true if attempt was succesfull</returns>
+    private bool SolveTopMiddleCardFromNextSide(IBoard board)
     {
         var middleCard = board.GetMiddleCard();
         var topMiddleCard = board.GetTopMiddleCard();
-
-        // rotate card due to same equal parts
         topMiddleCard.RotateCardToRight();
 
         for (var i = 0; i < topMiddleCard.NumberOfCardSides; i++)
@@ -338,16 +409,19 @@ public class Board3x3Solver : ISolver
         return false;
     }
 
+    /// <summary>
+    /// Finding the appropriate part of the emoticon from the next 
+    /// side of the card so that adjacent cards form a complete emoticon.
     // o o o
     // o X X
     // o o o
-    // an attempt to rotate the card so that the smiley is complete
-    private bool SolveRightMiddleCard(IBoard board)
+    /// </summary>
+    /// <param name="board">board</param>
+    /// <returns>true if attempt was succesfull</returns>
+    private bool SolveRightMiddleCardFromNextSide(IBoard board)
     {
         var middleCard = board.GetMiddleCard();
         var rightMiddleCard = board.GetRightMiddleCard();
-
-        // rotate card due to same equal parts
         rightMiddleCard.RotateCardToRight();
 
         for (var i = 0; i < rightMiddleCard.NumberOfCardSides; i++)
@@ -364,16 +438,19 @@ public class Board3x3Solver : ISolver
         return false;
     }
 
+    /// <summary>
+    /// Finding the appropriate part of the emoticon from the next 
+    /// side of the card so that adjacent cards form a complete emoticon.
     // o o o
     // o X o
     // o X o
-    // an attempt to rotate the card so that the smiley is complete
-    private bool SolveDownMiddleCard(IBoard board)
+    /// </summary>
+    /// <param name="board">board</param>
+    /// <returns>true if attempt was succesfull</returns>
+    private bool SolveDownMiddleCardFromNextSide(IBoard board)
     {
         var middleCard = board.GetMiddleCard();
         var downMiddleCard = board.GetDownMiddleCard();
-
-        // rotate card due to same equal parts
         downMiddleCard.RotateCardToRight();
 
         for (var i = 0; i < downMiddleCard.NumberOfCardSides; i++)
@@ -390,16 +467,19 @@ public class Board3x3Solver : ISolver
         return false;
     }
 
+    /// <summary>
+    /// Finding the appropriate part of the emoticon from the next 
+    /// side of the card so that adjacent cards form a complete emoticon.
     // o o o
     // X X o
     // o o o
-    // an attempt to rotate the card so that the smiley is complete
-    private bool SolveLeftMiddleCard(IBoard board)
+    /// </summary>
+    /// <param name="board">board</param>
+    /// <returns>true if attempt was succesfull</returns>
+    private bool SolveLeftMiddleCardFromNextSide(IBoard board)
     {
         var middleCard = board.GetMiddleCard();
         var leftMiddleCard = board.GetLeftMiddleCard();
-
-        // rotate card due to same equal parts
         leftMiddleCard.RotateCardToRight();
 
         for (var i = 0; i < leftMiddleCard.NumberOfCardSides; i++)
@@ -416,10 +496,14 @@ public class Board3x3Solver : ISolver
         return false;
     }
 
+    /// <summary>
+    /// Attempt to rotate a card so that adjacent cards form complete emoticons.
     // X X o
     // X o o
     // o o o
-    // an attempt to rotate the card so that the smiley is complete
+    /// </summary>
+    /// <param name="board">board</param>
+    /// <returns>true if attempt was succesfull</returns>
     private bool SolveTopLeftCard(IBoard board)
     {
         var leftMiddleCard = board.GetLeftMiddleCard();
@@ -440,10 +524,14 @@ public class Board3x3Solver : ISolver
         return false;
     }
 
+    /// <summary>
+    /// Attempt to rotate a card so that adjacent cards form complete emoticons.
     // o X X
     // o o X
     // o o o
-    // an attempt to rotate the card so that the smiley is complete
+    /// </summary>
+    /// <param name="board">board</param>
+    /// <returns>true if attempt was succesfull</returns>
     private bool SolveTopRightCard(IBoard board)
     {
         var topMiddleCard = board.GetTopMiddleCard();
@@ -464,10 +552,14 @@ public class Board3x3Solver : ISolver
         return false;
     }
 
+    /// <summary>
+    /// Attempt to rotate a card so that adjacent cards form complete emoticons.
     // o o o
     // o o X
     // o X X
-    // an attempt to rotate the card so that the smiley is complete
+    /// </summary>
+    /// <param name="board">board</param>
+    /// <returns>true if attempt was succesfull</returns>
     private bool SolveDownRightCard(IBoard board)
     {
         var rightMiddleCard = board.GetRightMiddleCard();
@@ -488,10 +580,14 @@ public class Board3x3Solver : ISolver
         return false;
     }
 
+    /// <summary>
+    /// Attempt to rotate a card so that adjacent cards form complete emoticons.
     // o o o
     // X o o
     // X X o
-    // an attempt to rotate the card so that the smiley is complete
+    /// </summary>
+    /// <param name="board">board</param>
+    /// <returns>true if attempt was succesfull</returns>
     private bool SolveDownLeftCard(IBoard board)
     {
         var downMiddleCard = board.GetDownMiddleCard();
@@ -512,6 +608,12 @@ public class Board3x3Solver : ISolver
         return false;
     }
 
+    /// <summary>
+    /// Determine whether two parts of an emoticon form a complete colored emoticon.
+    /// </summary>
+    /// <param name="part1">one part of emoticon</param>
+    /// <param name="part2">one part of emoticon</param>
+    /// <returns>true if two parts of emoticon form complete colored emoticon</returns>
     private bool IsCompleteColoredEmoticon(IEmoticonPart part1, IEmoticonPart part2)
     {
         var isSameColor = part1.EmoticonColor == part2.EmoticonColor;

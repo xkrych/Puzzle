@@ -3,6 +3,9 @@ using Puzzle.BL.Interfaces;
 
 namespace Puzzle.BL.Models;
 
+/// <summary>
+/// Class prforming cards moves on the board.
+/// </summary>
 public class CardMover : ICardMover
 {
     private readonly IFactory<IPermutationGenerator> permutationGeneratorFactory;
@@ -23,6 +26,13 @@ public class CardMover : ICardMover
         MoveCardsByIds(cardIdsRandomPermutation, board);
     }
 
+    /// <summary>
+    /// Moving the cards on the board from their current 
+    /// positions to match the target card layout.
+    /// </summary>
+    /// <param name="cardIdsAfterMove">target card layout</param>
+    /// <param name="board">board</param>
+    /// <exception cref="CardNotFoundException">card on the board wasn't found</exception>
     public void MoveCardsByIds(List<int> cardIdsAfterMove, IBoard board)
     {
         var cardMoves = new List<ICardMove>();
@@ -61,6 +71,11 @@ public class CardMover : ICardMover
         return generator;
     }
 
+    /// <summary>
+    /// Move cards on the board according to card moves list.
+    /// </summary>
+    /// <param name="cardMoves">list of card moves</param>
+    /// <param name="board">board</param>
     private void MoveCards(List<ICardMove> cardMoves, IBoard board)
     {
         if (cardMoves.Count == 0)

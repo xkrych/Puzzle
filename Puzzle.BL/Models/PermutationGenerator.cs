@@ -2,6 +2,9 @@
 
 namespace Puzzle.BL.Models;
 
+/// <summary>
+/// Class for generating permutations of numbers.
+/// </summary>
 public class PermutationGenerator : IPermutationGenerator
 {
     private int numberOfGeneratedPermutations;

@@ -3,6 +3,9 @@ using Puzzle.BL.Interfaces;
 
 namespace Puzzle.BL.Models;
 
+/// <summary>
+/// Class for one card on the board.
+/// </summary>
 public class Card : ICard
 {
     private int numberOfRightRotations;
@@ -13,6 +16,9 @@ public class Card : ICard
     public IEmoticonPart DownEmoticonColoredPart { get; private set; } = new EmoticonPart();
     public IEmoticonPart LeftEmoticonColoredPart { get; private set; } = new EmoticonPart();
     public int NumberOfCardSides => 4;
+    /// <summary>
+    /// number of emoticons parts on the card
+    /// </summary>
     public Dictionary<(EmoticonSide, EmoticonColor), int> EmoticonPartCounts { get; private set; } 
         = new Dictionary<(EmoticonSide, EmoticonColor), int>();
 
@@ -28,6 +34,9 @@ public class Card : ICard
         CheckEmoticonPartsCounts();
     }
 
+    /// <summary>
+    /// Get number of emoticons parts on the card.
+    /// </summary>
     private void CheckEmoticonPartsCounts()
     {
         EmoticonPartCounts.Clear();
@@ -37,6 +46,9 @@ public class Card : ICard
         CheckEmoticonPartCounts(DownEmoticonColoredPart.EmoticonSide, DownEmoticonColoredPart.EmoticonColor);
     }
 
+    /// <summary>
+    /// Get number of emoticon part on the card.
+    /// </summary>
     private void CheckEmoticonPartCounts(EmoticonSide side, EmoticonColor color)
     {
         if (!EmoticonPartCounts.ContainsKey((side, color)))
@@ -50,6 +62,12 @@ public class Card : ICard
         return (CardRightRotation)(numberOfRightRotations % NumberOfCardSides);
     }
 
+    /// <summary>
+    /// Get number of emoticon part on the card.
+    /// </summary>
+    /// <param name="emoticonPart">emoticon part</param>
+    /// <param name="partCount">number of emoticon parts on the card</param>
+    /// <returns>true if there are multiple identical parts of an emoticon on a card</returns>
     public bool HasMultipleEmoticonParts(IEmoticonPart emoticonPart, out int partCount)
     {
         var side = (emoticonPart.EmoticonSide == EmoticonSide.Down) ? EmoticonSide.Up : EmoticonSide.Down;

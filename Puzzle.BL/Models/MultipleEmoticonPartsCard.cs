@@ -3,6 +3,13 @@ using Puzzle.BL.Interfaces;
 
 namespace Puzzle.BL.Models;
 
+/// <summary>
+/// Class for a edge middle card containing multiple identical parts of emoticon.
+/// Edge middle cards:
+/// o X o
+/// X o X
+/// o X o
+/// </summary>
 public class MultipleEmoticonPartsMiddleEdgeCard
 {
     public MultipleEmoticonPartsMiddleEdgeCard(ICard card, 

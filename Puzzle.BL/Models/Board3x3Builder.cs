@@ -4,13 +4,15 @@ using Puzzle.BL.Interfaces;
 
 namespace Puzzle.BL.Models;
 
+/// <summary>
+/// Class for board initialization.
+/// </summary>
 public class Board3x3Builder : BoardBuilder, IBoardBuilder
 {
-    Board3x3 board = new Board3x3();
-
-    public Board3x3Builder(IFactory<ICard> cardFactory,
-        IFactory<IEmoticonPart> emoticonPartFactory)
-        :base(cardFactory, emoticonPartFactory)
+    public Board3x3Builder(IFactory<ICard> cardFactory, 
+        IFactory<IEmoticonPart> emoticonPartFactory, 
+        IFactory<IBoard> boardFactory) 
+        : base(cardFactory, emoticonPartFactory, boardFactory)
     {
     }
 

@@ -5,7 +5,7 @@ public interface IBoard
     int MiddleBoard1DIndex { get; }
     int RowCount { get; }
     int ColumnCount { get; }
-    ICard[,] Cards { get; }
+    ICard[,] Cards { get; set; }
     bool TryGetCardPositionById(int cardId, out int row, out int column);
     ICard[,] GetBoardCopy();
     List<int> GetCardIds();
