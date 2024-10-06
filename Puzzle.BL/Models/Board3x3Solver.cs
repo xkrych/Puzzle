@@ -26,6 +26,9 @@ public class Board3x3Solver : ISolver
     /// <returns>true if attempt was succesfull</returns>
     public Task<bool> SolveBoard(IBoard board)
     {
+        if (board is not Board3x3)
+            throw new Exception("Solver3x3 can solve only 3x3 board.");
+
         return Task.Run(() =>
         {
             cardIdsInMiddle.Clear();

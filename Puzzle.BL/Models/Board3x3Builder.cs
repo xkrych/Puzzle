@@ -9,11 +9,16 @@ namespace Puzzle.BL.Models;
 /// </summary>
 public class Board3x3Builder : BoardBuilder, IBoardBuilder
 {
+    private IFactory<Board3x3> boardFactory;
+    private Board3x3 board;
+
     public Board3x3Builder(IFactory<ICard> cardFactory, 
         IFactory<IEmoticonPart> emoticonPartFactory, 
-        IFactory<IBoard> boardFactory) 
-        : base(cardFactory, emoticonPartFactory, boardFactory)
+        IFactory<Board3x3> boardFactory)
+        : base(cardFactory, emoticonPartFactory)
     {
+        this.boardFactory = boardFactory;
+        board = boardFactory.Create();
     }
 
     public IBoard GetBoard()

@@ -7,19 +7,13 @@ namespace Puzzle.BL.Base
     {
         IFactory<ICard> cardFactory;
         IFactory<IEmoticonPart> emoticonPartFactory;
-        IFactory<IBoard> boardFactory;
 
         public BoardBuilder(IFactory<ICard> cardFactory,
-            IFactory<IEmoticonPart> emoticonPartFactory,
-            IFactory<IBoard> boardFactory)
+            IFactory<IEmoticonPart> emoticonPartFactory)
         {
             this.cardFactory = cardFactory;
             this.emoticonPartFactory = emoticonPartFactory;
-            this.boardFactory = boardFactory;
-            board = boardFactory.Create();
         }
-
-        protected IBoard board { get; set; }
 
         protected ICard CreateCard(int id)
         {
