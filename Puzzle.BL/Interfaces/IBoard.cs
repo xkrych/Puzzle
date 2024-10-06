@@ -18,4 +18,5 @@ public interface IBoard
     ICard GetDownMiddleCard();
     ICard GetDownLeftCard();
     ICard GetLeftMiddleCard();
+    List<int>  GetCardIdsAroundBoard();
 }

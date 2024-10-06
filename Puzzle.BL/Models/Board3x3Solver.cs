@@ -127,7 +127,7 @@ public class Board3x3Solver : ISolver
 
     /// <summary>
     /// Attempt to reposition the edge cards with multiple identical parts of the emoticon on the 
-    /// board so that every two adjacent cards form a complete emoticon and each edge card forms 
+    /// board so that every two adjacent cards form a complete emoticon and each middle edge card forms 
     /// a complete emoticon with the card in the middle of the board.
     /// </summary>
     /// <param name="board">board</param>
@@ -253,34 +253,6 @@ public class Board3x3Solver : ISolver
         return true;
     }
 
-    /// <summary>
-    /// Get IDs of the edge cards.
-    /// </summary>
-    /// <param name="board">board</param>
-    /// <returns>list of cards IDs</returns>
-    private List<int> GetCardIdsAroundBoard(IBoard board)
-    {
-        var cardIds = board.GetCardIds();
-        var cardIdsAroundBoard = new List<int>();
-        var i = 0;
-
-        while (i < cardIds.Count)
-        {
-            var row = i / board.RowCount;
-            var column = i % board.ColumnCount;
-
-            if (row == board.RowCount / 2 && column == board.ColumnCount / 2)
-            {
-                i++;
-                continue;
-            }
-
-            cardIdsAroundBoard.Add(cardIds[i++]);
-        }
-
-        return cardIdsAroundBoard;
-    }
-
     private void MoveNextCardToMiddleOfTheBoard(IBoard board, out bool isAllCardsInMiddle)
     {
         // if all cards has been in the middle of the board, set flag isAllCardsInMiddle
@@ -344,7 +316,7 @@ public class Board3x3Solver : ISolver
     private IPermutationGenerator CreatePermutaionGenerator(IBoard board)
     {
         // get list of card is around board
-        var edgeCardIds = GetCardIdsAroundBoard(board);
+        var edgeCardIds = board.GetCardIdsAroundBoard();
         // create permutation generator according to card IDs
         var generator = permutationGeneratorFactory.Create();
         generator.Init(edgeCardIds);

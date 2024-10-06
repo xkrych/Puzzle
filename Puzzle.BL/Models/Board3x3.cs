@@ -140,6 +140,34 @@ public class Board3x3 : IBoard
     }
 
     /// <summary>
+    /// Get IDs of the edge cards.
+    /// </summary>
+    /// <param name="board">board</param>
+    /// <returns>list of cards IDs</returns>
+    public List<int> GetCardIdsAroundBoard()
+    {
+        var cardIds = GetCardIds();
+        var cardIdsAroundBoard = new List<int>();
+        var i = 0;
+
+        while (i < cardIds.Count)
+        {
+            var row = i / RowCount;
+            var column = i % ColumnCount;
+
+            if (row == RowCount / 2 && column == ColumnCount / 2)
+            {
+                i++;
+                continue;
+            }
+
+            cardIdsAroundBoard.Add(cardIds[i++]);
+        }
+
+        return cardIdsAroundBoard;
+    }
+
+    /// <summary>
     /// Copy current card positions to new array
     /// </summary>
     /// <returns>array with current positions of the cards on the board</returns>
