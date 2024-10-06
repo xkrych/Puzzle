@@ -17,7 +17,7 @@ public class Card : ICard
     public IEmoticonPart LeftEmoticonColoredPart { get; private set; } = new EmoticonPart();
     public int NumberOfCardSides => 4;
     /// <summary>
-    /// number of emoticons parts on the card
+    /// Number of emoticons parts on the card.
     /// </summary>
     public Dictionary<(EmoticonSide, EmoticonColor), int> EmoticonPartCounts { get; private set; } 
         = new Dictionary<(EmoticonSide, EmoticonColor), int>();

@@ -4,6 +4,9 @@ using Puzzle.BL.Interfaces;
 
 namespace Puzzle.BL.Models;
 
+/// <summary>
+/// Class for puzzle solving.
+/// </summary>
 public class Board3x3Solver : ISolver
 {
     private readonly IFactory<IPermutationGenerator> permutationGeneratorFactory;
@@ -123,7 +126,7 @@ public class Board3x3Solver : ISolver
     }
 
     /// <summary>
-    /// Attempt to reposition the edge cards with multiple identical parts of the emoji on the 
+    /// Attempt to reposition the edge cards with multiple identical parts of the emoticon on the 
     /// board so that every two adjacent cards form a complete emoticon and each edge card forms 
     /// a complete emoticon with the card in the middle of the board.
     /// </summary>
